@@ -15,11 +15,12 @@ import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+public class SecurityConfig { // The /config directory is automatically scanned for
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSec) throws Exception { // Filter chain for security
-        httpSec.csrf(csrf -> csrf.disable()) // Disabled CSRF to allow POST
+        httpSec
+                .csrf(csrf -> csrf.disable()) // Disabled CSRF to allow POST
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/public/**").permitAll() // Allow everything under /public
                         .requestMatchers("/private/**").authenticated()) // Require auth under /private
@@ -32,13 +33,13 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() { // In-memory users
         UserDetails user = User
                 .withUsername("student")
-                .password(passwordEncoder().encode("password"))
+                .password(passwordEncoder().encode("password")) // Use our encoding for passwords
                 .roles("USER")
                 .build();
 
         UserDetails admin = User
                 .withUsername("admin")
-                .password(passwordEncoder().encode("admin"))
+                .password(passwordEncoder().encode("admin")) // Use our encoding for passwords
                 .roles("ADMIN")
                 .build();
 
@@ -46,7 +47,7 @@ public class SecurityConfig {
     }
 
     @Bean
-    public PasswordEncoder passwordEncoder() {
+    public PasswordEncoder passwordEncoder() { // Plain-text is not allowed, so we set a standard encoder
         return new BCryptPasswordEncoder();
     }
 }
